@@ -1,4 +1,4 @@
-## DAT110 - Project 2: Publish-subscribe messaging middleware
+d## DAT110 - Project 2: Publish-subscribe messaging middleware
 
 ### Organisation
 

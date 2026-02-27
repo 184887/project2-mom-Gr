@@ -1,5 +1,6 @@
 package no.hvl.dat110.iotsystem;
 
+import no.hvl.dat110.broker.Broker;
 import no.hvl.dat110.client.Client;
 import no.hvl.dat110.messages.Message;
 import no.hvl.dat110.messages.PublishMsg;
@@ -23,12 +24,27 @@ public class DisplayDevice {
 		// - receive messages on the topic
 		// - unsubscribe from the topic
 		// - disconnect from the broker
-		
+
+        Client client = new Client("display", "localhost", 8080);
+
+        client.connect();
+
+        client.createTopic("temperature");
+
+        client.subscribe("temperature");
+
+        for (int i = 0; i < COUNT; i++){
+        client.receive();
+        }
+
+        client.unsubscribe("temperature");
+
+        client.disconnect();
+
 		// TODO - END
 		
 		System.out.println("Display stopping ... ");
-		
-		throw new UnsupportedOperationException(TODO.method());
+
 		
 	}
 }

@@ -3,7 +3,6 @@ package no.hvl.dat110.broker;
 import java.util.Set;
 import java.util.Collection;
 
-import no.hvl.dat110.common.TODO;
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.common.Stopable;
 import no.hvl.dat110.messages.*;
@@ -165,27 +164,14 @@ public class Dispatcher extends Stopable {
 		// topic and message is contained in the subscribe message
 		// messages must be sent using the corresponding client session objects
 
-        String message = msg.getMessage();
         String topic = msg.getTopic();
+        String message = msg.getMessage();
 
-        Set<String> subscribers = storage.getSubscribers(topic);
+      Set<String> subs =  storage.getSubscribers(topic);
 
-        if (subscribers == null || subscribers.isEmpty()) {
-            return;
-        }
-
-        for (String clientId : subscribers) {
-
-            ClientSession session = storage.getClient(clientId);
-            if (session == null) {
-                continue;
-            }
-
-            try {
-                session.send(new PublishMsg(msg.getUser(), topic, message));
-            } catch (Exception e) {
-                Logger.log("Failed to send to " + clientId + ": " + e.getMessage());
-            }
+      for (String s : subs){
+          ClientSession session = storage.getSession(s);
+          session.send(msg);
         }
     }
 }
