@@ -1,106 +1,116 @@
 package no.hvl.dat110.broker;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import no.hvl.dat110.client.Client;
 import no.hvl.dat110.common.TODO;
 import no.hvl.dat110.common.Logger;
+import no.hvl.dat110.messages.Message;
+import no.hvl.dat110.messages.PublishMsg;
 import no.hvl.dat110.messagetransport.Connection;
 
 public class Storage {
 
-	// data structure for managing subscriptions
-	// maps from a topic to set of subscribed users
-	protected ConcurrentHashMap<String, Set<String>> subscriptions;
-	
-	// data structure for managing currently connected clients
-	// maps from user to corresponding client session object
-	
-	protected ConcurrentHashMap<String, ClientSession> clients;
+    // data structure for managing subscriptions
+    // maps from a topic to set of subscribed users
+    protected ConcurrentHashMap<String, Set<String>> subscriptions;
 
-	public Storage() {
-		subscriptions = new ConcurrentHashMap<String, Set<String>>();
-		clients = new ConcurrentHashMap<String, ClientSession>();
-	}
+    protected ConcurrentHashMap<String, List<PublishMsg>> messagebuffer;
 
-	public Collection<ClientSession> getSessions() {
-		return clients.values();
-	}
+    // data structure for managing currently connected clients
+    // maps from user to corresponding client session object
 
-	public Set<String> getTopics() {
+    protected ConcurrentHashMap<String, ClientSession> clients;
 
-		return subscriptions.keySet();
+    public Storage() {
+        subscriptions = new ConcurrentHashMap<String, Set<String>>();
+        clients = new ConcurrentHashMap<String, ClientSession>();
+        messagebuffer = new ConcurrentHashMap<String, List<PublishMsg>>();
 
-	}
+    }
 
-	// get the session object for a given user
-	// session object can be used to send a message to the user
-	
-	public ClientSession getSession(String user) {
+    public Collection<ClientSession> getSessions() {
+        return clients.values();
+    }
 
-		ClientSession session = clients.get(user);
+    public Set<String> getTopics() {
 
-		return session;
-	}
+        return subscriptions.keySet();
 
-	public Set<String> getSubscribers(String topic) {
+    }
 
-		return (subscriptions.get(topic));
+    // get the session object for a given user
+    // session object can be used to send a message to the user
 
-	}
+    public ClientSession getSession(String user) {
 
-	public void addClientSession(String user, Connection connection) {
+        ClientSession session = clients.get(user);
 
-		// TODO: add corresponding client session to the storage
-		// See ClientSession class
+        return session;
+    }
+
+    public Set<String> getSubscribers(String topic) {
+
+        return (subscriptions.get(topic));
+
+    }
+
+    public void addClientSession(String user, Connection connection) {
+
+        // TODO: add corresponding client session to the storage
+        // See ClientSession class
         ClientSession clientSession = new ClientSession(user, connection);
 
         clients.putIfAbsent(user, clientSession);
 
-	}
+    }
 
-	public void removeClientSession(String user) {
+    public void removeClientSession(String user) {
 
-		// TODO: disconnet the client (user) 
-		// and remove client session for user from the storage
+        // TODO: disconnet the client (user)
+        // and remove client session for user from the storage
 
         clients.remove(user);
-		
-	}
 
-	public void createTopic(String topic) {
+    }
 
-		// TODO: create topic in the storage
+    public void createTopic(String topic) {
+
+        // TODO: create topic in the storage
 
         subscriptions.putIfAbsent(topic, ConcurrentHashMap.newKeySet());
 
-	}
+    }
 
-	public void deleteTopic(String topic) {
+    public void deleteTopic(String topic) {
 
-		// TODO: delete topic from the storage
+        // TODO: delete topic from the storage
 
-		subscriptions.remove(topic);
-		
-	}
+        subscriptions.remove(topic);
 
-	public void addSubscriber(String user, String topic) {
+    }
 
-		// TODO: add the user as subscriber to the topic
-		
-		subscriptions.computeIfAbsent(topic, t -> ConcurrentHashMap.newKeySet()).add(user);
-		
-	}
+    public void addSubscriber(String user, String topic) {
 
-	public void removeSubscriber(String user, String topic) {
+        // TODO: add the user as subscriber to the topic
 
-		// TODO: remove the user as subscriber to the topic
+        subscriptions.computeIfAbsent(topic, t -> ConcurrentHashMap.newKeySet()).add(user);
+
+    }
+
+    public void removeSubscriber(String user, String topic) {
+
+        // TODO: remove the user as subscriber to the topic
 
         Set<String> subs = subscriptions.get(topic);
 
         if (subs != null) {
             subs.remove(user);
-	}
-}
+        }
+    }
+
+
 }
